@@ -19,7 +19,6 @@ module.exports = {
     description: 'Advanced music bot',
     alias: ['skip', 'stop'],
     async execute(client, message, cmd, args) {
-console.log(fs.existsSync(join(MusicDir, args.join(' '))))
         const voice_channel = message.member.voice.channel;
         if (!voice_channel) return message.channel.send('You need to be in a channel to execute this command!');
         const permissions = voice_channel.permissionsFor(message.client.user);
