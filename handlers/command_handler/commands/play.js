@@ -34,7 +34,7 @@ console.log(fs.existsSync(join(MusicDir, args.join(' '))))
             if (!args.length) return message.channel.send('You need to send the second argument!');
             let song = {};
 
-            if(!fs.existsSync(join(MusicDir, args.join(' ')))) {
+            if(!fs.existsSync()) {
                 if (ytdl.validateURL(args[0])) {
                     const song_info = await ytdl.getInfo(args[0]);
                     song = { title: song_info.videoDetails.title, url: song_info.videoDetails.video_url }
@@ -71,7 +71,7 @@ console.log(fs.existsSync(join(MusicDir, args.join(' '))))
 
             } else {
                 console.log('test')
-                 resource = createAudioResource(`C:\\Users\\shoog\\Downloads\\${args}.mp3`, {
+                 resource = createAudioResource(join(MusicDir, args.join(' ')), {
                     inlineVolume: true,
                     metadata: {
                         title: args,

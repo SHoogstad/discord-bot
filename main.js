@@ -18,11 +18,4 @@ client.commands = new Collection
 require(`./handlers/command_handler/handler`)(client, Client);
 require(`./handlers/event_handler/handler`)(client);
 
-
-// client.on('guildMemberAdd', guildMember =>{
-//     let welcomeRole = guildMember.guild.roles.cache.find(role => role.name === 'Recruits');
-
-//     guildMember.roles.add(welcomeRole)
-// });
-
 client.login(token);
