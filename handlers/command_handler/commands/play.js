@@ -3,8 +3,11 @@ const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
 const fs = require('fs');
 
+const { join } = require("path");
+const MusicDir = join(__dirname, 'music');
 
-const { joinVoiceChannel, createAudioResource, createAudioPlayer, NoSubscriberBehavior, AudioPlayerStatus, VoiceConnectionStatus } = require('@discordjs/voice');
+
+const { joinVoiceChannel, createAudioResource, createAudioPlayer, AudioPlayerStatus, VoiceConnectionStatus } = require('@discordjs/voice');
 const queue = new Map();
 
 const player = createAudioPlayer();
@@ -16,6 +19,7 @@ module.exports = {
     description: 'Advanced music bot',
     alias: ['skip', 'stop'],
     async execute(client, message, cmd, args) {
+console.log(fs.existsSync(join(MusicDir, args.join(' '))))
         const voice_channel = message.member.voice.channel;
         if (!voice_channel) return message.channel.send('You need to be in a channel to execute this command!');
         const permissions = voice_channel.permissionsFor(message.client.user);
@@ -30,7 +34,7 @@ module.exports = {
             if (!args.length) return message.channel.send('You need to send the second argument!');
             let song = {};
 
-            if(!fs.existsSync(`C:\\Users\\shoog\\Downloads\\${args}.mp3`)) {
+            if(!fs.existsSync(join(MusicDir, args.join(' ')))) {
                 if (ytdl.validateURL(args[0])) {
                     const song_info = await ytdl.getInfo(args[0]);
                     song = { title: song_info.videoDetails.title, url: song_info.videoDetails.video_url }
@@ -56,7 +60,7 @@ module.exports = {
                         resource = createAudioResource(stream, {
                             inlineVolume: true,
                             metadata: {
-                                title: video.title, url: video.url
+                                title: video.title, url: video.url, youtube: true,
                             }
                         })
 
@@ -66,17 +70,18 @@ module.exports = {
                 }
 
             } else {
+                console.log('test')
                  resource = createAudioResource(`C:\\Users\\shoog\\Downloads\\${args}.mp3`, {
                     inlineVolume: true,
                     metadata: {
-                        title: args
+                        title: args,
+                        youtube: false,
                     },
                 });
             }
 
            
             if (!server_queue) {
-                console.log(resource)
                 const queue_constructor = {
                     voice_channel: voice_channel,
                     text_channel: message.channel,
@@ -107,9 +112,15 @@ module.exports = {
             } else {
         
                 server_queue.songs.push(resource);
-                console.log(queue);
+                
+                if(resource.metadata.youtube === true){
+                return message.channel.send(`🌐 **${resource.metadata.title}** added to queue!`);
 
-                return message.channel.send(`👍 **${resource.metadata.title}** added to queue!`);
+                }else{
+                    return message.channel.send(`💻 **${resource.metadata.title}** added to queue!`);
+
+                }
+
             }
 
         }
@@ -131,7 +142,7 @@ const video_player = async (guild, song, connection) => {
         queue.delete(guild.id);
         return;
     }
-    // const stream = ytdl(song.url);
+
     song.volume.setVolume(1);
     player.play(song)
 
